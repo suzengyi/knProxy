@@ -1,4 +1,6 @@
 <?php
+$ENCRYPT_PASSWORD="94d2686b711407d35a7811972e99b801";
+$SALT='8a3!v!Nimq&Yt%';
 define('KNPROXY_SECRET','joWVexlW4fHeH/2GGNLefy8bV7JFaaTTF92AWp1k0jDsMqC8tqeAvdLo/gg');
 // Set the language for KnProxy (currently supports en-US and ja-JP)
 define('KNPROXY_LANGUAGE','zh-CN');
@@ -47,4 +49,39 @@ define('KNPROXY_BINARY_CUTOFF',32*1024);//Cutoff of 32kb for binary data
 @ini_set('memory_limit','128M');
 @set_time_limit(180);
 @error_reporting(0);
+
+function validPassword($password) : bool
+{
+    global $SALT;
+    global $ENCRYPT_PASSWORD;
+    if ($password == null)
+    {
+        return false;
+    }
+    if (md5($password.$SALT) == $ENCRYPT_PASSWORD)
+    {
+        return true;
+    }else{
+        return false;
+    }
+}
+
+if(isset($_POST['password']))
+{
+    if(validPassword($_POST['password'])) {
+        setcookie("password", $_POST['password']);
+        echo "<a href=\"/index.php\">login success </a>";
+    }else {
+        echo "<a href=\"/login.php\">wrong password </a>";
+    }
+}
+elseif (isset($_COOKIE['password'])&& validPassword($_COOKIE['password']))
+{
+
+}
+else //if(isset($_SERVER["HTTP_REFERER"]) ? !stripos($_SERVER["HTTP_REFERER"],"login") : true )
+{
+    //error_log("jjjj");
+    header("Location: /login.php");
+}
 ?>
